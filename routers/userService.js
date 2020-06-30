@@ -26,7 +26,7 @@ function calculateDistance(latA, lngA, latB, lngB) {
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  const distance = (R * c) / 1000;
+  const distance = Math.abs((R * c) / 1000);
   return distance; // in km
 }
 
