@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   user.associate = function (models) {
-    user.hasMany(models.userservice);
+    user.hasMany(models.userService);
   };
   return user;
 };
