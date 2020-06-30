@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   service.associate = function (models) {
-    service.hasMany(models.userservice);
+    service.hasMany(models.userService);
   };
   return service;
 };
