@@ -3,7 +3,9 @@ const { Router } = express;
 const router = new Router();
 const UserService = require("../models").userService;
 const User = require("../models").user;
+const Service = require("../models").service;
 const authMiddleware = require("../auth/middleware");
+var nodemailer = require("nodemailer");
 
 function calculateDistance(latA, lngA, latB, lngB) {
   // http://www.movable-type.co.uk/scripts/latlong.html
@@ -70,6 +72,58 @@ router.get("/:serviceId/:latOwner/:lngOwner", async (req, res, next) => {
     });
 
     res.json(profilesFiltered);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/contact", authMiddleware, async (req, res, next) => {
+  try {
+    const userLogged = req.user.dataValues;
+
+    const { mailToId, date, time, message, serviceId } = req.body;
+    if (!mailToId || !date || !time || !message) {
+      return res
+        .status(400)
+        .send({ message: "Please fill out all the fields" });
+    } else {
+      const candidate = await User.findByPk(mailToId);
+      const serviceOffered = await Service.findByPk(serviceId);
+      const email = candidate.dataValues.email;
+
+      var transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD_EMAIL,
+        },
+      });
+
+      var mailOptions = {
+        from: `${userLogged.firstName} from Fluffy World<${process.env.EMAIL}>`,
+        to: email,
+        subject: "You have received a new request!🐶🐱",
+        html: `<h2>Hello <strong>${candidate.dataValues.firstName}<strong>!</h2>
+            <h3><strong>${userLogged.firstName}</strong> has required your services.</h3>
+            <p><u>Service</u>: ${serviceOffered.dataValues.name} </p>
+            <p><u>Date</u>:${date}</p>
+            <p><u>Time</u>:${time}</p>
+            <p><u>Message</u>:${message}</p>
+            <p>You can find more information <a href="http://localhost:3000/userservice/${userLogged.id}">here</a></p>
+            `, // html body
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          return res
+            .status(400)
+            .send({ message: "Something went wrong, sorry" });
+        } else {
+          console.log("Email sent: " + info.response);
+          res.status(201).json(info.response);
+        }
+      });
+    }
   } catch (e) {
     next(e);
   }
