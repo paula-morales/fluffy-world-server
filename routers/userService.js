@@ -36,9 +36,9 @@ function calculateDistance(latA, lngA, latB, lngB) {
 router.get("/", async (req, res, next) => {
   try {
     const getUserServices = await UserService.findAll({ include: [User] });
-    res.json(getUserServices);
-  } catch (e) {
-    next(e);
+    res.status(201).json(getUserServices);
+  } catch (error) {
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
@@ -71,9 +71,9 @@ router.get("/:serviceId/:latOwner/:lngOwner", async (req, res, next) => {
       }
     });
 
-    res.json(profilesFiltered);
+    res.status(201).json(profilesFiltered);
   } catch (e) {
-    next(e);
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
@@ -125,8 +125,71 @@ router.post("/contact", authMiddleware, async (req, res, next) => {
       });
     }
   } catch (e) {
-    next(e);
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
+router.post("/registerpet", authMiddleware, async (req, res) => {
+  const userLogged = req.user.dataValues;
+  const { name, description, picture } = req.body;
+  if (!picture || !name || !description) {
+    return res.status(400).send("Please fill out all the fields");
+  } else if (!userLogged.isOwner) {
+    return res.status(400).send("Sorry, you cannot register your pet");
+  }
+
+  try {
+    const getServices = await Service.findAll();
+    const serviceFiltered = getServices.find(
+      (service) => service.name === "pet friends"
+    );
+    const serviceId = serviceFiltered.id;
+
+    const newUserService = await UserService.create({
+      title: name,
+      rating: 0,
+      price: 0,
+      description,
+      picture,
+      userId: userLogged.id,
+      serviceId,
+    });
+
+    res.status(201).json(newUserService);
+  } catch (error) {
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res
+        .status(400)
+        .send({ message: "There is an existing account with this email" });
+    }
+
+    return res.status(400).send({ message: "Something went wrong, sorry" });
+  }
+});
+
+router.post("/registerservice", authMiddleware, async (req, res) => {
+  const userLogged = req.user.dataValues;
+  const { title, price, description, picture, serviceId } = req.body;
+  if (!title || !price || !description || !picture || !serviceId) {
+    return res.status(400).send("Please fill out all the fields");
+  } else if (!userLogged.isCandidate) {
+    return res.status(400).send("Sorry, you cannot register your service");
+  }
+
+  try {
+    const newUserService = await UserService.create({
+      title,
+      rating: 0,
+      price,
+      description,
+      picture,
+      userId: userLogged.id,
+      serviceId,
+    });
+
+    res.status(201).json(newUserService);
+  } catch (error) {
+    return res.status(400).send({ message: "Something went wrong, sorry" });
+  }
+});
 module.exports = router;
