@@ -36,9 +36,9 @@ function calculateDistance(latA, lngA, latB, lngB) {
 router.get("/", async (req, res, next) => {
   try {
     const getUserServices = await UserService.findAll({ include: [User] });
-    res.json(getUserServices);
-  } catch (e) {
-    next(e);
+    res.status(201).json(getUserServices);
+  } catch (error) {
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
@@ -71,9 +71,9 @@ router.get("/:serviceId/:latOwner/:lngOwner", async (req, res, next) => {
       }
     });
 
-    res.json(profilesFiltered);
+    res.status(201).json(profilesFiltered);
   } catch (e) {
-    next(e);
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
@@ -125,7 +125,7 @@ router.post("/contact", authMiddleware, async (req, res, next) => {
       });
     }
   } catch (e) {
-    next(e);
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
@@ -189,12 +189,6 @@ router.post("/registerservice", authMiddleware, async (req, res) => {
 
     res.status(201).json(newUserService);
   } catch (error) {
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return res
-        .status(400)
-        .send({ message: "There is an existing account with this email" });
-    }
-
     return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
