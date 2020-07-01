@@ -26,7 +26,7 @@ module.exports = {
           lastName: "test",
           phoneNumber: 123456,
           profilePicture: `https://picsum.photos/500/300?random=2`,
-          email: "candidate@test.com",
+          email: "fluffyworldproject@gmail.com",
           password: bcrypt.hashSync("123", SALT_ROUNDS),
           latitude: 52.35195,
           longitude: 4.92803,
