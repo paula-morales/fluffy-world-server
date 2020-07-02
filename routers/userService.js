@@ -4,6 +4,7 @@ const router = new Router();
 const UserService = require("../models").userService;
 const User = require("../models").user;
 const Service = require("../models").service;
+const Review = require("../models").review;
 const authMiddleware = require("../auth/middleware");
 var nodemailer = require("nodemailer");
 
@@ -34,11 +35,17 @@ function calculateDistance(latA, lngA, latB, lngB) {
 
 //get all /
 router.get("/", async (req, res, next) => {
+  "here";
   try {
-    const getUserServices = await UserService.findAll({ include: [User] });
+    const getUserServices = await UserService.findAll({
+      include: [User],
+    });
     res.status(201).json(getUserServices);
   } catch (error) {
-    return res.status(400).send({ message: "Something went wrong, sorry" });
+    console.log(error);
+    return res
+      .status(400)
+      .send({ message: "is here Something went wrong, sorry" });
   }
 });
 
@@ -157,12 +164,6 @@ router.post("/registerpet", authMiddleware, async (req, res) => {
 
     res.status(201).json(newUserService);
   } catch (error) {
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return res
-        .status(400)
-        .send({ message: "There is an existing account with this email" });
-    }
-
     return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
