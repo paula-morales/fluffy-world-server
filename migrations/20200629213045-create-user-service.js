@@ -12,9 +12,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      rating: {
-        type: Sequelize.INTEGER,
-      },
       price: {
         type: Sequelize.INTEGER,
         allowNull: false,
