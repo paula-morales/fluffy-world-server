@@ -1,12 +1,14 @@
 const express = require("express");
 const { Router } = express;
 const router = new Router();
-const Service = require("../models").service;
+const User = require("../models").user;
 
-router.get("/", async (req, res, next) => {
+router.get("/:userId", async (req, res, next) => {
+  const { userId } = req.params;
+  parseInt(userId);
   try {
-    const getServices = await Service.findAll();
-    res.status(201).json(getServices);
+    const getUser = await User.findByPk(userId);
+    res.status(201).json(getUser);
   } catch (e) {
     return res.status(400).send({ message: "Something went wrong, sorry" });
   }

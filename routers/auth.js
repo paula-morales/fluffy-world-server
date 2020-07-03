@@ -7,6 +7,7 @@ const { SALT_ROUNDS } = require("../config/constants");
 const userServices = require("../models/").userService;
 const Reviews = require("../models/").review;
 const Languages = require("../models/").language;
+
 const router = new Router();
 
 router.post("/login", async (req, res, next) => {
@@ -49,9 +50,11 @@ router.post("/signup", async (req, res) => {
     password,
     latitude,
     longitude,
+    languages,
     isOwner,
     isCandidate,
   } = req.body;
+
   if (
     !firstName ||
     !lastName ||
@@ -59,7 +62,8 @@ router.post("/signup", async (req, res) => {
     !email ||
     !password ||
     !latitude ||
-    !longitude
+    !longitude ||
+    !languages.length
   ) {
     return res.status(400).send("Please fill out all the fields");
   } else if ((!isOwner && !isCandidate) || (isOwner && isCandidate)) {
@@ -88,6 +92,8 @@ router.post("/signup", async (req, res) => {
 
       res.status(201).json({ token, ...newUser.dataValues });
     } else {
+      console.log("lang here", languages);
+
       const newUser = await User.create({
         firstName,
         lastName,
@@ -104,6 +110,13 @@ router.post("/signup", async (req, res) => {
       delete newUser.dataValues["password"]; // don't send back the password hash
 
       const token = toJWT({ userId: newUser.id });
+      const newLanguagesCreatePromises = languages.map(
+        async (lang) =>
+          await Language.create({ name: lang, userId: newUser.id })
+      );
+
+      //Using this we await on the whole array of promises as if it was just one
+      await Promise.all(newLanguagesCreatePromises);
 
       res.status(201).json({ token, ...newUser.dataValues });
     }
