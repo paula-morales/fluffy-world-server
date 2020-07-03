@@ -4,9 +4,9 @@ const router = new Router();
 const UserService = require("../models").userService;
 const User = require("../models").user;
 const Service = require("../models").service;
-const Review = require("../models").review;
 const authMiddleware = require("../auth/middleware");
 var nodemailer = require("nodemailer");
+const Languages = require("../models").language;
 
 function calculateDistance(latA, lngA, latB, lngB) {
   // http://www.movable-type.co.uk/scripts/latlong.html
@@ -35,17 +35,17 @@ function calculateDistance(latA, lngA, latB, lngB) {
 
 //get all /
 router.get("/", async (req, res, next) => {
-  "here";
   try {
     const getUserServices = await UserService.findAll({
-      include: [User],
+      include: {
+        model: User,
+        include: [Languages],
+      },
     });
     res.status(201).json(getUserServices);
   } catch (error) {
     console.log(error);
-    return res
-      .status(400)
-      .send({ message: "is here Something went wrong, sorry" });
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
@@ -171,10 +171,14 @@ router.post("/registerpet", authMiddleware, async (req, res) => {
 router.post("/registerservice", authMiddleware, async (req, res) => {
   const userLogged = req.user.dataValues;
   const { title, price, description, picture, serviceId } = req.body;
+
   if (!title || !price || !description || !picture || !serviceId) {
     return res.status(400).send("Please fill out all the fields");
   } else if (!userLogged.isCandidate) {
     return res.status(400).send("Sorry, you cannot register your service");
+  } else if (serviceId === "5") {
+    //this option should not be available to choose: "pet friends"
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 
   try {
