@@ -3,13 +3,12 @@ const { Router } = express;
 const router = new Router();
 const Service = require("../models").service;
 
-//get all /
 router.get("/", async (req, res, next) => {
   try {
     const getServices = await Service.findAll();
-    res.json(getServices);
+    res.status(201).json(getServices);
   } catch (e) {
-    next(e);
+    return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
 
