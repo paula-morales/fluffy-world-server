@@ -14,6 +14,8 @@ module.exports = {
           updatedAt: new Date(),
           userId: 2,
           serviceId: 1,
+          availableFrom: 8,
+          availableUntil: 16,
         },
         {
           title: "Simba",
@@ -24,6 +26,8 @@ module.exports = {
           updatedAt: new Date(),
           userId: 1,
           serviceId: 5,
+          availableFrom: 10,
+          availableUntil: 17,
         },
       ],
       {}
