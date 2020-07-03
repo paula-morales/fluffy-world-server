@@ -4,7 +4,9 @@ const { toJWT } = require("../auth/jwt");
 const authMiddleware = require("../auth/middleware");
 const User = require("../models/").user;
 const { SALT_ROUNDS } = require("../config/constants");
-
+const userServices = require("../models/").userService;
+const Reviews = require("../models/").review;
+const Languages = require("../models/").language;
 const router = new Router();
 
 router.post("/login", async (req, res, next) => {
@@ -17,7 +19,10 @@ router.post("/login", async (req, res, next) => {
         .send({ message: "Please provide both email and password" });
     }
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({
+      where: { email },
+      include: [userServices, Reviews, Languages],
+    });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(400).send({
