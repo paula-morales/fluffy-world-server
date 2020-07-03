@@ -52,6 +52,10 @@ module.exports = (sequelize, DataTypes) => {
     user.hasMany(models.userService);
     user.hasMany(models.review);
     user.hasMany(models.language);
+    user.belongsToMany(models.userService, {
+      through: "favorites",
+      foreignKey: "userId",
+    });
   };
   return user;
 };

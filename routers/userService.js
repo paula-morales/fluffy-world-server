@@ -138,8 +138,14 @@ router.post("/contact", authMiddleware, async (req, res, next) => {
 
 router.post("/registerpet", authMiddleware, async (req, res) => {
   const userLogged = req.user.dataValues;
-  const { name, description, picture } = req.body;
-  if (!picture || !name || !description) {
+  const {
+    name,
+    description,
+    picture,
+    availableFrom,
+    availableUntil,
+  } = req.body;
+  if (!picture || !name || !description || !availableFrom || !availableUntil) {
     return res.status(400).send("Please fill out all the fields");
   } else if (!userLogged.isOwner) {
     return res.status(400).send("Sorry, you cannot register your pet");
@@ -162,6 +168,8 @@ router.post("/registerpet", authMiddleware, async (req, res) => {
       picture,
       userId: userLogged.id,
       serviceId,
+      availableFrom,
+      availableUntil,
     });
 
     res.status(201).json(newUserService);
@@ -172,7 +180,15 @@ router.post("/registerpet", authMiddleware, async (req, res) => {
 
 router.post("/registerservice", authMiddleware, async (req, res) => {
   const userLogged = req.user.dataValues;
-  const { title, price, description, picture, serviceId } = req.body;
+  const {
+    title,
+    price,
+    description,
+    picture,
+    serviceId,
+    availableFrom,
+    availableUntil,
+  } = req.body;
 
   //to find the id of "pet friends"
   const getServices = await Service.findAll();
@@ -181,7 +197,15 @@ router.post("/registerservice", authMiddleware, async (req, res) => {
   );
   const serviceIdPetFriends = serviceFiltered.id;
 
-  if (!title || !price || !description || !picture || !serviceId) {
+  if (
+    !title ||
+    !price ||
+    !description ||
+    !picture ||
+    !serviceId ||
+    !availableFrom ||
+    !availableUntil
+  ) {
     return res.status(400).send("Please fill out all the fields");
   } else if (!userLogged.isCandidate) {
     return res.status(400).send("Sorry, you cannot register your service");
@@ -199,6 +223,8 @@ router.post("/registerservice", authMiddleware, async (req, res) => {
       picture,
       userId: userLogged.id,
       serviceId,
+      availableFrom,
+      availableUntil,
     });
 
     res.status(201).json(newUserService);
