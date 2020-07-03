@@ -20,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      availableFrom: DataTypes.STRING,
+
+      availableUntil: DataTypes.STRING,
     },
     {}
   );
@@ -28,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     userService.belongsTo(models.user);
     userService.belongsTo(models.service);
     userService.hasMany(models.review);
+    userService.belongsToMany(models.user, {
+      through: "favorites",
+      foreignKey: "userServiceId",
+    });
   };
   return userService;
 };

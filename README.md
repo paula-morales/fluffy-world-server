@@ -33,6 +33,7 @@ Diagram of data models:
 | POST   | '/userservice/contact'                        | Contact one candidate by email                  | mailToId, date, time, message, serviceId                                     | yes  |
 | POST   | '/userservice/registerpet'                    | Add a new pet profile                           | name, description, picture                                                   | yes  |
 | POST   | '/userservice/registerservice'                | Add a new service profile                       | title, price, description, picture, serviceId                                | yes  |
+| GET    | '/user/:userId'                               | Get a user by id                                | userId                                                                       | no   |
 
 ## Technologies used
 
