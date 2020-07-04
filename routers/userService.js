@@ -48,36 +48,50 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/:serviceId/:latOwner/:lngOwner", async (req, res, next) => {
-  const { serviceId, latOwner, lngOwner } = req.params;
+router.get("/:serviceId/:latOwner/:lngOwner/:km", async (req, res, next) => {
+  const { serviceId, latOwner, lngOwner, km } = req.params;
 
   parseFloat(latOwner);
   parseFloat(lngOwner);
   parseInt(serviceId);
+  parseInt(km);
+
+  if (!serviceId || !latOwner || !lngOwner || !km) {
+    return res.status(400).send({ message: "Please fill out all the fields" });
+  }
 
   try {
-    const getUserServices = await UserService.findAll({
-      where: { serviceId },
-      include: [User],
-    });
+    if (km === 1000) {
+      const getAllUserServices = await UserService.findAll({
+        include: [User],
+      });
+      res.status(201).json(getAllUserServices);
+    } else {
+      const getUserServices = await UserService.findAll({
+        where: { serviceId },
+        include: [User],
+      });
 
-    const profilesFiltered = getUserServices.filter((userService) => {
-      const user = userService.dataValues.user.dataValues;
-      const latUser = parseFloat(user.latitude);
-      const longUser = parseFloat(user.longitude);
-      const distance = calculateDistance(
-        latUser,
-        longUser,
-        parseFloat(latOwner),
-        parseFloat(lngOwner)
-      );
-      console.log("distance", distance);
-      if (distance < 4) {
-        return userService;
-      }
-    });
+      const profilesFiltered = getUserServices.filter((userService) => {
+        const user = userService.dataValues.user.dataValues;
+        const latUser = parseFloat(user.latitude);
+        const longUser = parseFloat(user.longitude);
+        const distance = calculateDistance(
+          latUser,
+          longUser,
+          parseFloat(latOwner),
+          parseFloat(lngOwner)
+        );
+        console.log("distance", distance);
+        if (distance < km) {
+          return userService;
+        } else {
+          return res.status(404).send({ message: "Not found" });
+        }
+      });
 
-    res.status(201).json(profilesFiltered);
+      res.status(201).json(profilesFiltered);
+    }
   } catch (e) {
     return res.status(400).send({ message: "Something went wrong, sorry" });
   }
