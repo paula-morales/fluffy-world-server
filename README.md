@@ -23,17 +23,20 @@ Diagram of data models:
 
 ## Endpoints
 
-| Method | Path                                          | Purpose                                         | required parameters                                                          | auth |
-| ------ | --------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------- | ---- |
-| POST   | '/signup'                                     | Create a new user and get a token               | name,longitude,latitude,phone,email, password,isOwner,isCandidate, languages | no   |
-| POST   | '/login'                                      | Get a token with email & password               | email, password                                                              | no   |
-| GET    | '/me'                                         | Get information of this user                    | none                                                                         | yes  |
-| GET    | '/userservice'                                | Get all profiles of userservice                 | none                                                                         | no   |
-| GET    | '/userservice/:serviceId/:latOwner/:lngOwner' | Get profiles near by one latitude and longitude | serviceId, latitudOwner, longitudOwner                                       | no   |
-| POST   | '/userservice/contact'                        | Contact one candidate by email                  | mailToId, date, time, message, serviceId                                     | yes  |
-| POST   | '/userservice/registerpet'                    | Add a new pet profile                           | name, description, picture                                                   | yes  |
-| POST   | '/userservice/registerservice'                | Add a new service profile                       | title, price, description, picture, serviceId                                | yes  |
-| GET    | '/user/:userId'                               | Get a user by id                                | userId                                                                       | no   |
+| Method | Path                                              | Purpose                                         | required parameters                                                          | auth |
+| ------ | ------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------- | ---- |
+| POST   | '/signup'                                         | Create a new user and get a token               | name,longitude,latitude,phone,email, password,isOwner,isCandidate, languages | no   |
+| POST   | '/login'                                          | Get a token with email & password               | email, password                                                              | no   |
+| GET    | '/me'                                             | Get information of this user                    | none                                                                         | yes  |
+| GET    | '/userservice'                                    | Get all profiles of userservice                 | none                                                                         | no   |
+| GET    | '/userservice/:serviceId/:latOwner/:lngOwner/:km' | Get profiles near by one latitude and longitude | serviceId, latitudOwner, longitudOwner,km                                    | no   |
+| POST   | '/userservice/contact'                            | Contact one candidate by email                  | mailToId, date, time, message, serviceId                                     | yes  |
+| POST   | '/userservice/registerpet'                        | Add a new pet profile                           | name, description, picture                                                   | yes  |
+| POST   | '/userservice/registerservice'                    | Add a new service profile                       | title, price, description, picture, serviceId                                | yes  |
+| GET    | '/user/:userId'                                   | Get a user by id                                | userId                                                                       | no   |
+| GET    | '/favorites'                                      | Get favorites by user logged in                 | none                                                                         | yes  |
+| POST   | '/favorites/add'                                  | Add a new favorite                              | idUserService                                                                | yes  |
+| DELETE | '/favorites/remove/:favoriteId'                   | Remove from favorites                           | none                                                                         | yes  |
 
 ## Technologies used
 
