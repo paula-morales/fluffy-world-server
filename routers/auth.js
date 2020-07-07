@@ -111,7 +111,7 @@ router.post("/signup", async (req, res) => {
       const token = toJWT({ userId: newUser.id });
       const newLanguagesCreatePromises = languages.map(
         async (lang) =>
-          await Language.create({ name: lang, userId: newUser.id })
+          await Languages.create({ name: lang, userId: newUser.id })
       );
 
       //Using this we await on the whole array of promises as if it was just one
