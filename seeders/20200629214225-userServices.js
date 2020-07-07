@@ -8,8 +8,8 @@ module.exports = {
         {
           title: "Happy paws",
           price: 15,
-          description: "some description",
-          picture: `https://picsum.photos/500/300?random=4`,
+          description: "The best dog walker that you can find in Amsterdam!",
+          picture: `https://ohmy.disney.com/wp-content/uploads/sites/25/2014/02/101Dalmatians-Anita.jpg`,
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 2,
@@ -20,8 +20,8 @@ module.exports = {
         {
           title: "Simba",
           price: 0,
-          description: "some description",
-          picture: `https://picsum.photos/500/300?random=5`,
+          description: "Friendly, adorable, cute",
+          picture: `https://www.nicepng.com/png/full/914-9142519_doge-meme-dog-doggo-funny-sticker-momo-png.png`,
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 1,

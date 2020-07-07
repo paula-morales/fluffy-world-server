@@ -11,7 +11,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          name: "pet trainer",
+          name: "pet sitter",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
