@@ -6,7 +6,7 @@ module.exports = {
       "reviews",
       [
         {
-          rating: 4,
+          rating: 5,
           comment: "Highly recommended!",
           createdAt: new Date(),
           updatedAt: new Date(),
