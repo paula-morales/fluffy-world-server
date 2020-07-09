@@ -130,7 +130,7 @@ router.post("/contact", authMiddleware, async (req, res, next) => {
             <p><u>Date</u>:${date}</p>
             <p><u>Time</u>:${time}</p>
             <p><u>Message</u>:${message}</p>
-            <p>You can find more information <a href="http://localhost:3000/userservice/${userLogged.id}">here</a></p>
+            <p>You can find more information <a href="https://fluffy-world.netlify.app/user/${userLogged.id}">here</a></p>
             `,
       };
 
