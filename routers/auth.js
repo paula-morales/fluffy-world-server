@@ -4,7 +4,9 @@ const { toJWT } = require("../auth/jwt");
 const authMiddleware = require("../auth/middleware");
 const User = require("../models/").user;
 const { SALT_ROUNDS } = require("../config/constants");
-
+const userServices = require("../models/").userService;
+const Reviews = require("../models/").review;
+const Languages = require("../models/").language;
 const router = new Router();
 
 router.post("/login", async (req, res, next) => {
@@ -17,11 +19,14 @@ router.post("/login", async (req, res, next) => {
         .send({ message: "Please provide both email and password" });
     }
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({
+      where: { email },
+      include: [userServices, Reviews, Languages],
+    });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(400).send({
-        message: "User with that email not found or password incorrect"
+        message: "User with that email not found or password incorrect",
       });
     }
 
@@ -35,23 +40,85 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const { email, password, name } = req.body;
-  if (!email || !password || !name) {
-    return res.status(400).send("Please provide an email, password and a name");
+  const {
+    firstName,
+    lastName,
+    phoneNumber,
+    profilePicture,
+    email,
+    password,
+    latitude,
+    longitude,
+    languages,
+    isOwner,
+    isCandidate,
+  } = req.body;
+
+  if (
+    !firstName ||
+    !lastName ||
+    !phoneNumber ||
+    !email ||
+    !password ||
+    !latitude ||
+    !longitude ||
+    !languages.length
+  ) {
+    return res.status(400).send("Please fill out all the fields");
+  } else if ((!isOwner && !isCandidate) || (isOwner && isCandidate)) {
+    return res.status(400).send("Please choose one option");
   }
 
   try {
-    const newUser = await User.create({
-      email,
-      password: bcrypt.hashSync(password, SALT_ROUNDS),
-      name
-    });
+    if (!profilePicture) {
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        phoneNumber,
+        profilePicture:
+          "https://i0.wp.com/www.mvhsoracle.com/wp-content/uploads/2018/08/default-avatar.jpg?ssl=1",
+        email,
+        password: bcrypt.hashSync(password, SALT_ROUNDS),
+        latitude,
+        longitude,
+        isOwner,
+        isCandidate,
+      });
 
-    delete newUser.dataValues["password"]; // don't send back the password hash
+      delete newUser.dataValues["password"]; // don't send back the password hash
 
-    const token = toJWT({ userId: newUser.id });
+      const token = toJWT({ userId: newUser.id });
 
-    res.status(201).json({ token, ...newUser.dataValues });
+      res.status(201).json({ token, ...newUser.dataValues });
+    } else {
+      console.log("lang here", languages);
+
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        phoneNumber,
+        profilePicture,
+        email,
+        password: bcrypt.hashSync(password, SALT_ROUNDS),
+        latitude,
+        longitude,
+        isOwner,
+        isCandidate,
+      });
+
+      delete newUser.dataValues["password"]; // don't send back the password hash
+
+      const token = toJWT({ userId: newUser.id });
+      const newLanguagesCreatePromises = languages.map(
+        async (lang) =>
+          await Languages.create({ name: lang, userId: newUser.id })
+      );
+
+      //Using this we await on the whole array of promises as if it was just one
+      await Promise.all(newLanguagesCreatePromises);
+
+      res.status(201).json({ token, ...newUser.dataValues });
+    }
   } catch (error) {
     if (error.name === "SequelizeUniqueConstraintError") {
       return res
